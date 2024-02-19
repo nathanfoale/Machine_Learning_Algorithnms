@@ -1,0 +1,68 @@
+#Functions to fit the models automatically are convenient to use, but for an in-depth understanding of the model and the maths behind it is good to implement an algorithm
+
+#normalization: substract the mean value of the array from each of the elements in the array and divide them by standard deviation 
+
+X_norm = (X - np.mean(X))/np.std(X)
+Y_norm = (Y - np.mean(Y))/np.std(Y)
+
+#Define cost function 
+def E(m, b, X, Y):
+    return 1/(2*len(Y))*np.sum((m*X + b - Y)**2)
+
+
+#Define functions dEdm and dEdb to calculate partial derivatives according to the equations
+def dEdm(m, b, X, Y):
+    # Calculate the derivative of the cost function with respect to m
+    res = 1/len(Y) * np.dot((m*X + b - Y), X)
+    
+    return res
+
+def dEdb(m, b, X, Y):
+    # Calculate the derivative of the cost function with respect to b
+    res = 1/len(Y) * np.sum(m*X + b - Y)
+    
+    return res
+
+#implement gradient descent
+def gradient_descent(dEdm, dEdb, m, b, X, Y, learning_rate=0.001, num_iterations=1000, print_cost=False):
+    for iteration in range(num_iterations):
+        # Calculate the gradients
+        grad_m = dEdm(m, b, X, Y)
+        grad_b = dEdb(m, b, X, Y)
+        
+        # Update parameters
+        m_new = m - learning_rate * grad_m
+        b_new = b - learning_rate * grad_b
+        
+        # Update parameters
+        m = m_new
+        b = b_new
+        
+        # Print cost if specified
+        if print_cost:
+            cost = E(m, b, X, Y)
+            print(f"Cost after iteration {iteration}: {cost}")
+        
+    return m, b
+
+print(gradient_descent(dEdm, dEdb, 0, 0, X_norm, Y_norm))
+print(gradient_descent(dEdm, dEdb, 1, 5, X_norm, Y_norm, learning_rate = 0.01, num_iterations = 10))
+
+#run the gradient descent method starting from the initial point  (𝑚0,𝑏0)=(0,0) 
+m_initial = 0; b_initial = 0; num_iterations = 30; learning_rate = 1.2
+m_gd, b_gd = gradient_descent(dEdm, dEdb, m_initial, b_initial, 
+                              X_norm, Y_norm, learning_rate, num_iterations, print_cost=True)
+
+print(f"Gradient descent result: m_min, b_min = {m_gd}, {b_gd}") 
+
+
+X_pred = np.array([50, 120, 280])
+# Use the same mean and standard deviation of the original training array X
+X_pred_norm = (X_pred - np.mean(X))/np.std(X)
+Y_pred_gd_norm = m_gd * X_pred_norm + b_gd
+# Use the same mean and standard deviation of the original training array Y
+Y_pred_gd = Y_pred_gd_norm * np.std(Y) + np.mean(Y)
+
+print(f"TV marketing expenses:\n{X_pred}")
+print(f"Predictions of sales using Scikit_Learn linear regression:\n{Y_pred_sklearn.T}")
+print(f"Predictions of sales using Gradient Descent:\n{Y_pred_gd}")
