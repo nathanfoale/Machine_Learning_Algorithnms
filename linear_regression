@@ -1,0 +1,92 @@
+import numpy as np
+# A library for programmatic plot generation.
+import matplotlib.pyplot as plt
+# A library for data manipulation and analysis.
+import pandas as pd
+# LinearRegression from sklearn.
+from sklearn.linear_model import LinearRegression
+
+path = "data/***.csv"
+
+adv = pd.read_csv(path)
+adv.head()
+
+adv.plot(x='TV', y='Sales', kind='scatter', c='black')
+
+#Save the required field of the DataFrame into variables X and Y
+X = adv['TV']
+Y = adv['Sales']
+
+#use the function np.polyfit(x, y, deg) to fit a polynomial of degree deg to points (𝑥,𝑦) , minimising the sum of squared errors.
+m_numpy, b_numpy = np.polyfit(X, Y, 1)
+
+print(f"Linear regression with NumPy. Slope: {m_numpy}. Intercept: {b_numpy}")
+
+#plot the linear regression line
+def plot_linear_regression(X, Y, x_label, y_label, m, b, X_pred=np.array([]), Y_pred=np.array([])):
+    fig, ax = plt.subplots(1,1,figsize=(8,5))
+    ax.plot(X, Y, 'o', color='black')
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
+
+    ax.plot(X, m*X + b, color='red')
+    # Plot prediction points (empty arrays by default - the predictions will be calculated later).
+    ax.plot(X_pred, Y_pred, 'o', color='blue', markersize=8)
+    
+plot_linear_regression(X, Y, 'TV', 'Sales', m_numpy, b_numpy)
+
+#Make predictions substituting the obtained slope and intercept coefficients into the equation  𝑌=𝑚𝑋+𝑏 , given an array of  𝑋  values
+def pred_numpy(m, b, X):
+    Y = m*X+b
+     return Y
+
+X_pred = np.array([50, 120, 280])
+Y_pred_numpy = pred_numpy(m_numpy, b_numpy, X_pred)
+
+print(f"TV marketing expenses:\n{X_pred}")
+print(f"Predictions of sales using NumPy linear regression:\n{Y_pred_numpy}")
+
+plot_linear_regression(X, Y, 'TV', 'Sales', m_numpy, b_numpy, X_pred, Y_pred_numpy)
+
+#Scikit-learn is an open-source machine learning library that supports supervised and unsupervised learning.
+
+#Create an estimator object for a linear regression model:
+lr_sklearn = LinearRegression()
+
+print(f"Shape of X array: {X.shape}")
+print(f"Shape of Y array: {Y.shape}")
+
+try:
+    lr_sklearn.fit(X, Y)
+except ValueError as err:
+    print(err)
+
+X_sklearn = X[:, np.newaxis]
+Y_sklearn = Y[:, np.newaxis]
+
+print(f"Shape of new X array: {X_sklearn.shape}")
+print(f"Shape of new Y array: {Y_sklearn.shape}")
+
+
+#Fit the linear regression model passing X_sklearn and Y_sklearn arrays into the function lr_sklearn.fit.
+lr_sklearn.fit(X_sklearn, Y_sklearn)
+
+m_sklearn = lr_sklearn.coef_
+b_sklearn = lr_sklearn.intercept_
+
+print(f"Linear regression using Scikit-Learn. Slope: {m_sklearn}. Intercept: {b_sklearn}")
+
+#Increase the dimension of the  𝑋  array using the function np.newaxis (see an example above) and pass the result to the lr_sklearn.predict function to make predictions.
+def pred_sklearn(X, lr_sklearn):
+    # Increase the dimension of X array to 2D
+    X_2D = X[:, np.newaxis]
+    
+    # Make predictions using lr_sklearn.predict
+    Y = lr_sklearn.predict(X_2D)
+    
+    return Y
+
+Y_pred_sklearn = pred_sklearn(X_pred, lr_sklearn)
+
+print(f"TV marketing expenses:\n{X_pred}")
+print(f"Predictions of sales using Scikit_Learn linear regression:\n{Y_pred_sklearn.T}")
