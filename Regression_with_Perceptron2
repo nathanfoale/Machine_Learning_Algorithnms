@@ -1,12 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
-# A library for data manipulation and analysis.
+
 import pandas as pd
 
-# Output of plotting commands is displayed inline within the Jupyter notebook.
+
 %matplotlib inline 
 
-# Set a seed so that the results are consistent.
+
 np.random.seed(3) 
 
 #Neural Network Model with a Single Perceptron and One Input Node
