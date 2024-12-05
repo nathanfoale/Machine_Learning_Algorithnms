@@ -13,16 +13,16 @@ adv.head()
 
 adv.plot(x='TV', y='Sales', kind='scatter', c='black')
 
-# save the required field of the DataFrame into variables X and Y
+# variables X and Y into dataframe
 X = adv['TV']
 Y = adv['Sales']
 
-#use the function np.polyfit(x, y, deg) to fit a polynomial of degree deg to points (x,y) , minimising the sum of squared errors.
+# function to fit a polynomial of degree deg to points (x,y) - minimising the sum of squared errors
 m_numpy, b_numpy = np.polyfit(X, Y, 1)
 
 print(f"Linear regression with NumPy. Slope: {m_numpy}. Intercept: {b_numpy}")
 
-#plot the linear regression line
+# linear regression plot
 def plot_linear_regression(X, Y, x_label, y_label, m, b, X_pred=np.array([]), Y_pred=np.array([])):
     fig, ax = plt.subplots(1,1,figsize=(8,5))
     ax.plot(X, Y, 'o', color='black')
@@ -35,7 +35,7 @@ def plot_linear_regression(X, Y, x_label, y_label, m, b, X_pred=np.array([]), Y_
     
 plot_linear_regression(X, Y, 'TV', 'Sales', m_numpy, b_numpy)
 
-#make predictions substituting the obtained slope and intercept coefficients into the equation  Y= mx+b , given an array of  𝑋  values
+# predictions substituting the obtained slope and intercept coefficients into the equation  Y= mx+b , given an array of  𝑋  values
 def pred_numpy(m, b, X):
     Y = m*X+b
      return Y
